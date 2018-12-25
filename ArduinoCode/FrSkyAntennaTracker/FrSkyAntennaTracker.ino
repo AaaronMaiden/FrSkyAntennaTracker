@@ -1,8 +1,33 @@
+/*
+ * 
+ *                       FRSKY ANTENNA TRACKER
+ * 
+ * 
+ * 
+ * Aaron G.
+ * Dec 2018
+ */
+ 
+#include "FrSkySportSensor.h"
+#include "FrSkySportSensorXjt.h"
+#include "FrSkySportSensorGps.h"
+#include "FrSkySportSensorVario.h"
+#include "FrSkySportSingleWireSerial.h"
+#include "FrSkySportDecoder.h"
+#include "SoftwareSerial.h"
 #include <math.h>
 #define TRIPOD_HEIGHT   1.5             //Height of antennas over 0m (ground).
 #define EARTH_RADIUS    6372795         //m
 #define PRECISE_PI      3.14159265359
 
+FrSkySportSensorXjt xjt;
+FrSkySportSensorFcs fcs;
+FrSkySportSensorGps gps;
+FrSkySportSensorRpm rpm;
+FrSkySportSensorVario vario;
+FrSkySportDecoder decoder;
+
+uint16_t decodeResult;
 float altitudeUAV;
 float distanceUAV;
 
@@ -44,6 +69,7 @@ void computeDistance(float lat1, float long1, float lat2, float long2){
 
 void setup(){
   Serial.begin(57600);
+  decoder.begin(FrSkySportSingleWireSerial::SOFT_SERIAL_PIN_3,&xjt,&gps,&vario);
 }
 
 void loop(){
