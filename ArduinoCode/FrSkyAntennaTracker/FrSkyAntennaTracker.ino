@@ -1,6 +1,11 @@
 /*
  * 
  *                       FRSKY ANTENNA TRACKER
+ *                       
+ * Open source Arduino based and FrSky SmartPort compatible RC Antenna 
+ * Tracker. Uses GPS and Barometer SmartPort telemetry to calculate Azimuth 
+ * and Elevation angles and apply them in a closed loop with a Magnetometer 
+ * sensor for Azimuth and an Accelerometer sensor for Elevation. 
  * 
  * 
  * 
@@ -19,24 +24,41 @@
 #define TRIPOD_HEIGHT   1.5             //Height of antennas over 0m (ground).
 #define EARTH_RADIUS    6372795         //m
 #define PRECISE_PI      3.14159265359
+#define UPDATE_DELAY      200  //ms
+#define TIME_OUT          2000 //ms
 
-FrSkySportSensorXjt xjt;
-FrSkySportSensorFcs fcs;
-FrSkySportSensorGps gps;
-FrSkySportSensorRpm rpm;
-FrSkySportSensorVario vario;
-FrSkySportDecoder decoder;
+FrSkySportSensorXjt xjtSensor;
+FrSkySportSensorFcs fcsSensor;
+FrSkySportSensorGps gpsSensor;
+FrSkySportSensorRpm rpmSensor;
+FrSkySportSensorVario varioSensor;
+FrSkySportDecoder smartPortDecoder;
 
+uint32_t currentTime,updateTime,lastReceived;
 uint16_t decodeResult;
 float altitudeUAV;
 float distanceUAV;
 
 
-float getAzimutAngle(){
+float getAzimuth(){
 }
 
-float getElevationAngle(){
+float getElevation(){
+}
+
+
+float computeAzimuth(){
+}
+
+float computeElevationAngle(){
   return atan2((altitudeUAV-TRIPOD_HEIGHT),distanceUAV);
+}
+
+
+void applyAzimuth(){
+}
+
+void applyElevation(){
 }
 
 
@@ -69,9 +91,30 @@ void computeDistance(float lat1, float long1, float lat2, float long2){
 
 void setup(){
   Serial.begin(57600);
-  decoder.begin(FrSkySportSingleWireSerial::SOFT_SERIAL_PIN_3,&xjt,&gps,&vario);
+  smartPortDecoder.begin(FrSkySportSingleWireSerial::SOFT_SERIAL_PIN_3,&xjtSensor,&fcsSensor,&gpsSensor,&rpmSensor,&varioSensor);
 }
 
 void loop(){
+
+
+  decodeResult = smartPortDecoder.decode();
+  if(decodeResult != SENSOR_NO_DATA_ID) lastReceived = millis();
+  
+  currentTime = millis();
+  if((currentTime > updateTime) && ((currentTime - lastReceived) < TIME_OUT)){
+    updateTime = currentTime + UPDATE_DELAY;
+
+
+
+
+    gpsSensor.getLat()
+    gpsSensor.getLon()
+    varioSensor.getAltitude()
+
+
+    
+    
+  }
+  
   
 }
